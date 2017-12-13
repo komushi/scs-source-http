@@ -1,0 +1,19 @@
+server:
+  port: 8081
+
+spring:
+  cloud:
+    stream:
+      defaultBinder: kinesis
+      default:
+        contentType: application/json
+      bindings:
+        output:
+          destination: http_raw
+          producer: 
+            partitionKeyExpression: "1" 
+
+cloud:  
+  aws:  
+    region:  
+      static: ap-northeast-1 
