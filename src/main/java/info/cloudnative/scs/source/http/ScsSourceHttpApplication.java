@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package info.cloudnative.http;
+package info.cloudnative.scs.source.http;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,9 +23,9 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
 @Import(org.springframework.cloud.stream.app.http.source.HttpSourceConfiguration.class)
-public class ScsProcessorHttpApplication {
+public class ScsSourceHttpApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ScsProcessorHttpApplication.class, args);
+		SpringApplication.run(ScsSourceHttpApplication.class, args);
 	}
 }
