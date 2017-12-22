@@ -113,7 +113,7 @@
         <configuration>
           <images>
             <image>
-              <name>komushi/${project.name}:1.0.0.RELEASE</name>
+              <name>komushi/${project.name}</name>
               <build>
                 <from>anapsix/alpine-java:8</from>
                 <volumes>

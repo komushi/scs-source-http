@@ -1,100 +1,67 @@
 # scs-source-http
-## Based on [Spring Cloud Stream](https://cloud.spring.io/spring-cloud-stream/) 
-# Option 1. Local Deployment as Spring Cloud Stream Application
-
-## 1-1. Prerequisites for Local Deployment
+# I. Quick Start Steps 
+## 1. Prerequisite
 
 * [Homebrew](http://brew.sh/) if you use Mac OS X and prefer homebrew otherwise you need to install/start all the middleware components manually.
 * [Homebrew Services](https://github.com/Homebrew/homebrew-services)
 * [Maven](http://brewformulas.org/Maven)
 * [RabbitMQ](http://brewformulas.org/Rabbitmq)
+* [MongoDB](http://brewformulas.org/Mongodb)
 * [Kafka](http://brewformulas.org/Kafka) is an alternative for messaging.
-* [Kinesis] is the default messaging choice.
+* [scs-source-http](https://github.com/komushi/scs-source-http)
 
-## 1-2. Test with Local Deployment
-### 1-2-1. Download and Build
-```
-$ git clone https://github.com/komushi/scs-source-http.git
-$ cd scs-source-http
-$ mvn clean package
-```
-
-### 1-2-2. Start RabbitMQ
+### 1-1. Start RabbitMQ
 ```
 brew services start rabbitmq
 ```
 
-### 1-2-3. Start scs-source-http
-```
-java -jar target/scs-source-http-1.0.0-RELEASE.jar
-```
 
-### 1-2-4. Post a message
+## 2. Download and Build
 
 ```
-curl -H "Content-Type: text/plain" -X POST -d'468244D1361B8A3EB8D206CC394BC9E9,BB899DFEA9CC964B50C540A1D685CCFB,2013-01-01 00:00:00,2013-01-01 00:04:00,240,1.71,139.752268,35.677043,139.771699,35.697283,CSH,6.50,0.50,0.50,0.00,0.00,7.50' 'http://localhost:9000'
-```
-
-# Option 2. Another deployment option - spring boot in docker
-
-## 2-1. Download and Build
-### 2-1-1. assembly.xml under src/main/docker
-```
-<assembly
-        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-    <id>scs-source-http</id>
-    <dependencySets>
-        <dependencySet>
-            <includes>
-                <include>info.cloudnative:scs-source-http</include>
-            </includes>
-            <outputDirectory>.</outputDirectory>
-            <outputFileNameMapping>scs-source-http.jar</outputFileNameMapping>
-        </dependencySet>
-    </dependencySets>
-</assembly>
-```
-
-### 2-1-2. Modify docker-maven-plugin inside pom.xml
-Under plugin/configuration/images/image/build/, modify entryPoint like below.
-```
-<entryPoint>
-  <exec>
-    <arg>java</arg>
-    <arg>-jar</arg>
-    <arg>/maven/${project.name}.jar</arg>
-  </exec>
-</entryPoint>
-```
-
-### 2-1-3. Build docker image by maven
-```
+git clone https://github.com/komushi/scs-source-http.git
+cd scs-source-http
 mvn clean package docker:build
+docker push komushi/scs-source-http
 ```
 
-if necessay push to docker hub
-
+## 3. Run in Java CLI
+### 3-1. Command to start jar
 ```
-mvn docker:push -Ddocker.username=[provide your username] -Ddocker.password=[provide password]
-```
-
-## 2-2. Test with HTTP Source
-
-```
-docker run -p <host_port>:<container_port> komushi/scs-source-http <app_args>
+java -jar target/scs-source-http-1.0.0-RELEASE.jar --spring.cloud.stream.defaultBinder=rabbit
 ```
 
-### 2-2-1. Start docker containers
-
+### 3-2. Test with scs-source-http and scs-processor-geocoding-reverse
 ```
-docker run -p 9000:9000 komushi/scs-source-http --spring.cloud.stream.bindings.output.destination=http_raw --spring.rabbitmq.host=docker.for.mac.localhost --spring.rabbitmq.port=5672 --spring.rabbitmq.username=guest --spring.rabbitmq.password=guest
-```
+java -jar target/scs-source-http-1.0.0-RELEASE.jar --spring.cloud.stream.defaultBinder=rabbit 
 
-### 2-2-2. Post a message
+java -jar target/scs-processor-geocoding-reverse-1.0.0-RELEASE.jar --spring.cloud.stream.defaultBinder=rabbit --logging.level.info.cloudnative=TRACE --properties.mongo.hostName=localhost
 
-```
 curl -H "Content-Type: text/plain" -X POST -d'468244D1361B8A3EB8D206CC394BC9E9,BB899DFEA9CC964B50C540A1D685CCFB,2013-01-01 00:00:00,2013-01-01 00:04:00,240,1.71,139.752268,35.677043,139.771699,35.697283,CSH,6.50,0.50,0.50,0.00,0.00,7.50' 'http://localhost:9000'
+```
+
+# 4. Another deployment option - spring boot in docker
+
+### 4-1. Local Execution on RabbitMQ
+```
+docker run -p 9000:9000 komushi/scs-source-http --spring.cloud.stream.defaultBinder=rabbit --spring.rabbitmq.host=docker.for.mac.localhost --spring.rabbitmq.port=5672
+
+docker run komushi/scs-processor-geocoding-reverse --spring.cloud.stream.defaultBinder=rabbit --spring.rabbitmq.host=docker.for.mac.localhost --spring.rabbitmq.port=5672 --logging.level.info.cloudnative=TRACE
+```
+
+### 4-2. Deploy on AWS
+```
+docker run komushi/scs-source-http
+```
+
+# II. Appendix
+### Default Parameters - application.properties
+```
+server.port=9000
+spring.cloud.stream.defaultBinder=kinesis
+spring.cloud.stream.default.contentType=text/plain
+spring.cloud.stream.bindings.output.destination=http_raw
+spring.cloud.stream.bindings.output.producer.partitionKeyExpression=1
+cloud.aws.region.static=us-east-1
 ```
 
