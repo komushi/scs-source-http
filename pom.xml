@@ -52,7 +52,18 @@
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-stream-kinesis</artifactId>
-      <version>1.0.0.BUILD-SNAPSHOT</version>
+      <!-- <version>1.0.0.BUILD-SNAPSHOT</version> -->
+      <version>1.0.0.BUILD-20171129.185158-21</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-stream-binder-kinesis</artifactId>
+      <version>1.0.0.BUILD-20171129.185148-21</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-stream-binder-kinesis-core</artifactId>
+      <version>1.0.0.BUILD-20171129.185137-21</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.cloud.stream.app</groupId>
