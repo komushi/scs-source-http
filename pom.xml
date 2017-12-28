@@ -52,7 +52,6 @@
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-stream-kinesis</artifactId>
-      <!-- <version>1.0.0.BUILD-SNAPSHOT</version> -->
       <version>1.0.0.BUILD-20171129.185158-21</version>
     </dependency>
     <dependency>
